@@ -1,11 +1,412 @@
+import 'package:date_format/date_format.dart';
+import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+import 'model/TestModel.dart';
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+void main() => runApp(
+    //1.test runapp
+//  Center(
+//    child: Text(
+//      "Hello World!",
+//      textDirection: TextDirection.ltr,
+//    ),
+//  )
+
+    //2、custom app
+//    App()
+
+    //3、custom material app
+    CustomerApp3());
+
+class CustomerApp3 extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return CustomerApp3State();
+  }
+}
+
+class CustomerApp3State extends State<CustomerApp3> {
+  ScrollController _controller;
+  bool isToTop = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _controller = ScrollController();
+    _controller.addListener(() {});
+    super.initState();
+  }
+
+  Widget getItem(BuildContext context, int index) {
+    return Listener(
+      onPointerCancel: (event)=>{print('event $event')},
+      onPointerMove: (event)=>{print('event $event')},
+      onPointerUp: (event)=>{print('event $event')},
+      onPointerDown: (event)=>{print('event $event')},
+      child: Container(
+          height: 30,
+          width: 100,
+          alignment: Alignment.topLeft,
+          color: Colors.white,
+          child: FlatButton(
+            onPressed: (){
+              print('dkasda');
+
+              Scaffold.of(context).showSnackBar(
+                new SnackBar(
+                  content: new Text("Added to favorite"),
+                  action: new SnackBarAction(
+                    label: "UNDO",
+                    onPressed: () => Scaffold.of(context).hideCurrentSnackBar(),
+                  ),
+                ),
+              );
+            },
+            child: Text('lalla'),
+            color: Colors.red,
+            textColor: Colors.blue,
+          )),
+    );
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+    // TODO: implement build
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(left: 20, top: 40, right: 40),
+              child: FloatingActionButton(
+                onPressed: isToTop
+                    ? () {
+                        print(isToTop);
+                        _controller.animateTo(0,
+                            duration: Duration(milliseconds: 200),
+                            curve: Curves.ease);
+                      }
+                    : null,
+                child: Text(
+                  "Top",
+                  style: TextStyle(color: Colors.yellow),
+                ),
+              ),
+            ),
+            Expanded(
+                child: NotificationListener<ScrollNotification>(
+                    onNotification: (notification) {
+                      if (notification is ScrollUpdateNotification) {
+                        print(notification.metrics.pixels);
+                        if (notification.metrics.pixels > 100) {
+                          setState(() {
+                            isToTop = true;
+                          });
+                        } else if (notification.metrics.pixels < 100) {
+                          setState(() {
+                            isToTop = false;
+                          });
+                        }
+                      }
+                    },
+                    child: ListView.builder(
+                      controller: _controller,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (BuildContext context, int index) =>
+                          getItem(context, index),
+                      itemCount: 100,
+                      itemExtent: 40,
+                    )))
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _controller.dispose();
+    super.dispose();
+  }
+}
+
+//class CustomMaterialApp2 extends StatelessWidget {
+//  @override
+//  Widget build(BuildContext context) {
+//    // TODO: implement build
+//    TextStyle textStyleBlack = TextStyle(
+//        color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20);
+//
+//    TextStyle textStyleYellow = TextStyle(
+//        color: Colors.yellow, fontWeight: FontWeight.normal, fontSize: 30);
+//
+//    return MaterialApp(
+//      home: Scaffold(
+//          backgroundColor: Colors.white,
+//          appBar: AppBar(
+//            title: Text(
+//              "hello",
+//              maxLines: 2,
+//              style: TextStyle(color: Colors.red),
+//            ),
+//          ),
+//          body: CustomScrollView(
+//            slivers: <Widget>[
+//              SliverAppBar(
+//                title: Text("sliver title"),
+//                floating: true,
+//                flexibleSpace: FadeInImage.assetNetwork(
+//                    placeholder: 'lib/assets/ali_landscape.png',
+//                    image:
+//                        "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1303636189,2885099528&fm=26&gp=0.jpg",
+//                fit: BoxFit.cover,),
+//                expandedHeight: 100,
+//              ),
+//              SliverList(
+//                  delegate: SliverChildBuilderDelegate(
+//                      (BuildContext context, int index) =>
+//                          ListTile(title: Text('Item $index')),
+//                      childCount: 200))
+//            ],
+//          )
+//          ListView.separated(
+//            separatorBuilder: (BuildContext context, int index){
+//              if(index%2 == 0){
+//                return Divider(height: 2,color: Colors.red,);
+//              }else{
+//                return Divider(height: 2,color: Colors.yellow,);
+//              }
+//            },
+//            itemBuilder: (BuildContext context, int index){
+//            return Column(
+//              children: <Widget>[
+//                ListTile(title: Text("title $index")),
+////                Divider(height: 2,color: Colors.red,)
+//              ],
+//            );
+//
+//          },itemCount: 10)
+
+//          ListView(
+//            scrollDirection: Axis.horizontal,
+//            itemExtent: 200,
+//            children: <Widget>[
+//              Container(
+//                color: Colors.yellow,
+//              ),
+//              Container(
+//                color: Colors.red,
+//              ),
+//              Container(
+//                color: Colors.grey,
+//              ),
+//              Container(
+//                color: Colors.green,
+//              ),
+//              Container(
+//                color: Colors.blue,
+//              )
+
+//              ListTile(
+//                leading: Icon(Icons.map),
+//                title: Text('map'),
+//                subtitle: Text('map'),
+//              ),
+//              ListTile(
+//                leading: Icon(Icons.map),
+//                title: Text('map'),
+//                subtitle: Text('map'),
+//              ),
+//              ListTile(
+//                leading: Icon(Icons.map),
+//                title: Text('map'),
+//                subtitle: Text('map'),
+//      )
+//            ],
+//          )
+//          Container(
+//            margin: EdgeInsets.only(left: 30,top: 50),
+//            child: Text.rich(
+//              TextSpan(children: <TextSpan>[
+//                TextSpan(text: "i am black \n", style: textStyleBlack),
+//                TextSpan(text: "i am yellow \n", style: textStyleYellow),
+//                TextSpan(text: "i am black \n", style: textStyleBlack),
+//                TextSpan(text: "i am yellow ", style: textStyleYellow),
+//              ]),
+//            ),
+//          )
+//      FadeInImage.assetNetwork(placeholder: 'lib/assets/ali_landscape.png', image: "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1303636189,2885099528&fm=26&gp=0.jpg")
+//          ),
+//      theme: ThemeData(primarySwatch: Colors.green),
+//    );
+//  }
+//}
+
+class CustomMaterialApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return MaterialApp(
+      home: Home(),
+      theme: ThemeData(primarySwatch: Colors.green),
+    );
+  }
+}
+
+class Home extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+        backgroundColor: Colors.grey[100],
+        appBar: AppBar(
+          title: Text(TestModel("jake", "nana").name),
+        ),
+        body: ListWidget());
+  }
+}
+
+class ListWidget extends StatelessWidget {
+  Widget _itemBuilder(BuildContext context, int index) {
+    return Container(
+      color: Colors.white,
+      margin: EdgeInsets.all(8),
+      child: Column(
+        children: <Widget>[
+          Image.network(
+            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565476747316&di=d6c0635fa4c77a2bf12c83115745fd05&imgtype=0&src=http%3A%2F%2Fphoto.16pic.com%2F00%2F13%2F22%2F16pic_1322578_b.jpg",
+            height: 100,
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          Text(
+            testModelList[index].name,
+            style: Theme.of(context).textTheme.title,
+          ),
+          SizedBox(
+            height: 10.0,
+          ),
+          Text(
+            testModelList[index].id,
+            style: Theme.of(context).textTheme.subhead,
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return ListView.builder(
+        itemCount: testModelList.length, itemBuilder: _itemBuilder);
+  }
+}
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Center(
+      child: Text(
+        "App",
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontSize: 40,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.bold,
+            color: Colors.green),
+      ),
+    );
+  }
+}
+
+class MyApp extends StatefulWidget {
+  // This widget is the root of your application.
+
+  handleValue(int value) {}
+
+  handleError(error) {}
+
+  handleComplete() {}
+
+  handleFuture() {}
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return MyAppState();
+  }
+}
+
+class MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused) {
+      print('paused');
+    }
+    if (state == AppLifecycleState.inactive) {
+      print('inactive');
+    }
+    if (state == AppLifecycleState.resumed) {
+      print('resumed');
+    }
+  }
+
+//
+//  @override
+//  void didChangeDependencies() {
+//    // TODO: implement didChangeDependencies
+//    super.didChangeDependencies();
+//    print('didChangeDependencies');
+//  }
+//
+//  @override
+//  void didUpdateWidget(MyApp oldWidget) {
+//    // TODO: implement didUpdateWidget
+//    super.didUpdateWidget(oldWidget);
+//    print('didUpdateWidget');
+//  }
+
+  @override
+  Widget build(BuildContext context) {
+//    Future<int> future = new Future(() => handleFuture());
+//
+//    future.then((value) => handleValue(value))
+//    .catchError((error) => handleError(error))
+//    .whenComplete(() => handleComplete());
+
+    print('build');
+
+    final wordPair = WordPair.random();
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -20,7 +421,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.yellow,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: WordPair.random().asPascalCase),
       color: Colors.red,
     );
   }
@@ -47,16 +448,50 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() =>
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
 
+    print('initState');
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    print('didChangeDependencies');
+  }
+
+  @override
+  void didUpdateWidget(MyHomePage oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+    print('didUpdateWidget');
+  }
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    print("deactivate");
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    print("dispose");
+  }
+
+  void _incrementCounter() => setState(() {
+        // This call to setState tells the Flutter framework that something has
+        // changed in this State, which causes it to rerun the build method below
+        // so that the display can reflect the updated values. If we changed
+        // _counter without calling setState(), then the build method would not be
+        // called again, and so nothing would appear to happen.
+        _counter++;
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +528,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'You have pushed the button this many times:',
+              '(测试热重载)You have pushed the button this many times:',
             ),
             Text(
               '$_counter',
@@ -110,3 +545,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+//}
