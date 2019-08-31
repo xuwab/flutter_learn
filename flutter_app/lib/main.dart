@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:date_format/date_format.dart';
 import 'package:english_words/english_words.dart';
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/model/TestEvent.dart';
 
 import 'model/TestModel.dart';
 
@@ -17,7 +21,159 @@ void main() => runApp(
 //    App()
 
     //3、custom material app
-    CustomerApp3());
+    MyCustomPage());
+
+class MyCustomPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return MaterialApp(
+      title: 'my app',
+      theme: ThemeData(primaryColor: Colors.yellow),
+      home: CustomNotificationApp(),
+    );
+  }
+}
+
+class CustomNotification extends Notification {
+  String msg;
+
+  CustomNotification(this.msg);
+}
+
+class CustomNotificationWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return RaisedButton(
+      onPressed: () => eventBus.fire(TestEvent("kulijiwa")),
+      child: Text("Press Me"),
+    );
+  }
+}
+
+class CustomNotificationApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return CustomNotificationAppState();
+  }
+}
+
+EventBus eventBus = EventBus();
+
+class CustomNotificationAppState extends State<CustomNotificationApp> {
+
+  String _msg = "通知";
+
+  StreamSubscription subscription;
+
+  @override
+  void initState() {
+
+    // TODO: implement initState
+    subscription = eventBus.on<TestEvent>().listen((event){
+      setState(() {
+        _msg += "\n"+event.msg;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    subscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    int count = 0;
+    // TODO: implement build
+    return NotificationListener<CustomNotification>(
+      onNotification: (notification) {
+        setState(() {
+
+          count++;
+          print(_msg);
+        });
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[Text(_msg), CustomNotificationWidget()],
+      ),
+    );
+  }
+}
+
+class TransferDataApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return TransferDataAppState();
+  }
+}
+
+class TransferDataAppState extends State<TransferDataApp> {
+  int count = 0;
+
+  void _increment() => setState(() {
+        count++;
+      });
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return CountContainer(
+      increment: _increment,
+      child: CountWidget(),
+      state: this,
+    );
+  }
+}
+
+class CountContainer extends InheritedWidget {
+  final Function increment;
+
+  final TransferDataAppState state;
+
+  static CountContainer of(BuildContext context) =>
+      context.inheritFromWidgetOfExactType(CountContainer) as CountContainer;
+
+  CountContainer(
+      {Key key,
+      @required Widget child,
+      @required this.increment,
+      @required this.state})
+      : super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(CountContainer oldWidget) {
+    // TODO: implement updateShouldNotify
+    return state.count != oldWidget.state.count;
+  }
+}
+
+class CountWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+
+    CountContainer container = CountContainer.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Count Title'),
+      ),
+      body: Text('the count is ${container.state.count}'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: container.increment,
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
 
 class CustomerApp3 extends StatefulWidget {
   @override
@@ -41,17 +197,17 @@ class CustomerApp3State extends State<CustomerApp3> {
 
   Widget getItem(BuildContext context, int index) {
     return Listener(
-      onPointerCancel: (event)=>{print('event $event')},
-      onPointerMove: (event)=>{print('event $event')},
-      onPointerUp: (event)=>{print('event $event')},
-      onPointerDown: (event)=>{print('event $event')},
+      onPointerCancel: (event) => {print('event $event')},
+      onPointerMove: (event) => {print('event $event')},
+      onPointerUp: (event) => {print('event $event')},
+      onPointerDown: (event) => {print('event $event')},
       child: Container(
           height: 30,
           width: 100,
           alignment: Alignment.topLeft,
           color: Colors.white,
           child: FlatButton(
-            onPressed: (){
+            onPressed: () {
               print('dkasda');
 
               Scaffold.of(context).showSnackBar(
@@ -70,8 +226,6 @@ class CustomerApp3State extends State<CustomerApp3> {
           )),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
