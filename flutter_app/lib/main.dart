@@ -21,7 +21,56 @@ void main() => runApp(
 //    App()
 
     //3、custom material app
-    MyCustomPage());
+    NavigatorAPP());
+
+class NavigatorAPP extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return MaterialApp(
+      title: 'home',
+      routes: {'second': (context) => SecondScreen()},
+      onUnknownRoute: (RouteSettings settings) =>
+          MaterialPageRoute(builder: (context) => SecondScreen()),
+      home: FirstScreen(),
+    );
+  }
+}
+
+class FirstScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("First"),
+      ),
+      body: RaisedButton(
+        onPressed: () => {
+          Navigator.pushNamed(context, 'second', arguments: 'hello i am first')
+              .then((value) => print(value))
+        },
+        child: Text('push next', textDirection: TextDirection.ltr),
+      ),
+    );
+  }
+}
+
+class SecondScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    String msg  = ModalRoute.of(context).settings.arguments as String;
+    print(msg);
+    return Scaffold(
+      appBar: AppBar(title: Text('Second')),
+      body: RaisedButton(
+        onPressed: () => {Navigator.pop(context,'i am from second')},
+        child: Text('pop back', textDirection: TextDirection.ltr),
+      ),
+    );
+  }
+}
 
 class MyCustomPage extends StatelessWidget {
   @override
@@ -63,18 +112,16 @@ class CustomNotificationApp extends StatefulWidget {
 EventBus eventBus = EventBus();
 
 class CustomNotificationAppState extends State<CustomNotificationApp> {
-
   String _msg = "通知";
 
   StreamSubscription subscription;
 
   @override
   void initState() {
-
     // TODO: implement initState
-    subscription = eventBus.on<TestEvent>().listen((event){
+    subscription = eventBus.on<TestEvent>().listen((event) {
       setState(() {
-        _msg += "\n"+event.msg;
+        _msg += "\n" + event.msg;
       });
     });
     super.initState();
@@ -94,7 +141,6 @@ class CustomNotificationAppState extends State<CustomNotificationApp> {
     return NotificationListener<CustomNotification>(
       onNotification: (notification) {
         setState(() {
-
           count++;
           print(_msg);
         });
