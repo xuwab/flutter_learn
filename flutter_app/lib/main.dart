@@ -4,6 +4,7 @@ import 'package:date_format/date_format.dart';
 import 'package:english_words/english_words.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/animation/AnimationApp.dart';
 import 'package:flutter_app/model/TestEvent.dart';
 
 import 'model/TestModel.dart';
@@ -21,7 +22,7 @@ void main() => runApp(
 //    App()
 
     //3、custom material app
-    NavigatorAPP());
+    MyAnimationApp());
 
 class NavigatorAPP extends StatelessWidget {
   @override
